@@ -1,0 +1,28 @@
+LEFT PADDLE:(5, 25, 25, 100)
+RIGHT PADDLE: (770, 25, 25, 100)
+Kinda funny video: https://developers.google.com/web/updates/2017/04/devtools-release-notes#screenshots 
+
+function PaddleBrain() {
+					if(BallpY > AI_VPos)
+						AI_VPos += 10
+						
+				} else(BallpY < AI_VPos) {
+						AI_VPos -= 10
+					}
+
+
+
+					function Ai_Movement() {
+				/////////AI for right paddle
+				AI_Center = AI_VPos + (AI_HEIGHT/2);	
+				if(BallPos > (AI_Center+5)) {
+						AI_VPos += 5;
+					}
+					if(BallPos < AI_Center-5) {
+						AI_VPos -= 5;
+					}
+
+
+			}
+
+			BallPos = BallpY;
