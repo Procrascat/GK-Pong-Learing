@@ -1,6 +1,6 @@
             var BallpX = 400, BallpY = 300; ////
-			var BallSpeedX = 6;
-			var BallSpeedY = 6;
+			var BallSpeedX = 2;
+			var BallSpeedY = 2;
 			var BallPos;
 			var canvas; 
 			var canvasContext; 
@@ -55,6 +55,7 @@
 				canvasContext.fillStyle = 'black'; ////
 				canvasContext.fillRect(0, 0, canvas.width, canvas.height); ////
 			}
+			
 			function paddle() {
 				////Draw Paddle
 				canvasContext.beginPath(); ////
@@ -62,6 +63,7 @@
 				canvasContext.fillRect(10, P_VPos, P_Width, P_HEIGHT); ////
 				canvasContext.fill();			
 			}
+			
 			function colorCircle() {
 				//// Draw Ball ////
 				canvasContext.beginPath(); ////
@@ -69,7 +71,8 @@
 				canvasContext.arc(BallpX, BallpY, 10, 0, Math.PI*2, false); ////
 				canvasContext.fill(); 
 			}
-            function comp() {
+			
+			function comp() {
 				
 				/////Draw AI Paddle
 				canvasContext.beginPath(); ////
@@ -84,7 +87,20 @@
 				canvasContext.write
 				canvasContext.font = "100px Arial"
 				canvasContext.fillText(LP_Score + "|" + RP_Score, canvas.width/3, 100)
+
+				if(LP_Score == 10) {
+					LP_Score -= 10;
+					RP_Score -= RP_Score;
+					ballReset();
+				}
+
+				if(RP_Score == 10) {					
+					RP_Score -= 10;
+					LP_Score -= LP_Score;
+					ballReset();
+				}
 			}
+			
 			function drawEverything() {
 				////Background
 				colorRect();
@@ -97,47 +113,56 @@
 				
 				score(); ////
 				
+				if(RP_Score == 10 || LP_Score == 10){
+					clearTimeout(drawEverything)
+				}
+
 			}
 						
 			
 			function ballReset() {
 				BallpX = canvas.width/2; ////
 				BallpY = canvas.height/2; ////
+				BallSpeedX = -3; ////
+				BallSpeedY = -3; ////
+
+				
 			}
 			
 			function Ai_Movement() {
 				/////////AI for right paddle
 				AI_Center = AI_VPos + (AI_HEIGHT/2);	////
-				if(BallPos > (AI_Center+5)) {
-						AI_VPos += 5; ////
+				if(BallPos > (AI_Center+15)) {
+						AI_VPos += 4.5 + Math.random()*4; ////
 					}
-					if(BallPos < AI_Center-5) {
-						AI_VPos -= 5; ////
-					}
-
+				if(BallPos < AI_Center-15) {
+						AI_VPos -= 4.5 + Math.random()*4; ////
+					}								
 
 			}
 			
 			function Boundaries() {
 				//Boundaries 
 				// creates boundary along right edge
-				if(BallpX > canvas.width) {
-					BallSpeedX *= -1; //reverses the ball's speed(sending it backwards) 
+				if(BallpX > canvas.width) {				
+					ballReset();
+						LP_Score += 1; // +1 to left player   
 				}
 				
 				// creates boundary along left edge
-				if(BallpX < 0) {
-					BallSpeedX *= -1; //reverses the ball's speed(sending it forwards)	
+				if(BallpX < 0) {										
+					ballReset(); //// 
+					RP_Score += 1; // +1 to right player 				
 				}
 				
 				// creates boundary along top edge
 				if(BallpY > canvas.height) {
-					BallSpeedX *= -1; //reverses the ball's speed(sending it down) 
+					BallSpeedY *= -1; //reverses the ball's speed(sending it down) 
 				}
 				
 				// creates boundary along bottom edge
 				if(BallpY < 0) {
-					BallSpeedX *= -1; //reverses the ball's speed(sending it up)	
+					BallSpeedY *= -1; //reverses the ball's speed(sending it up)	
 				}	
 			}
 			
@@ -148,47 +173,36 @@
 
 				Ai_Movement(); ////
 				
-				//////// moves ball to the right 50 pixels each sec ////
-				BallpX += BallSpeedX; ////
-				BallpY += BallSpeedY; ////
+				//////// moves ball each sec ////	
+				BallpX += BallSpeedX;
+				BallpY += BallSpeedY;
+
 				BallPos = BallpY; ////
 				console.log("Ball location is now: " + BallpX +"," + BallpY); ////
-				console.log("Ball speed is " + BallSpeedX * BallSpeedY); ////
-				console.log("Paddle Vertical Position:" + P_VPos); ////								
+				console.log("Ball speed is " + BallSpeedX +","+ BallSpeedY); ////
+				console.log("Paddle Vertical Position:" + P_VPos); ////		
+									
 				
-				if(BallpX < P_Width + 22) { //If the ball moves beyond the left edge of the screen
-					if(BallpY > P_VPos && BallpY < P_VPos + P_HEIGHT) {
-						BallSpeedX *= -1; // Paddle collision 													
-					} else {
-						ballReset(); //// 
-						RP_Score += 1; // +1 to right player
-					  } 
-					  
-					if(BallpY > P_Center) {
-						BallSpeedY -= 5; ////
-					}else{
-						BallSpeedY += 5; ////	
-					}
-				}
+				if(BallpX < P_Width + 22 && BallpY >= P_VPos && BallpY <= P_VPos + P_HEIGHT) { //If the ball moves beyond the left edge of the screen				   
+						BallSpeedX *= -1; // Paddle collision 																		
+											
+						var BDeflectionY = BallpY - (P_VPos + P_HEIGHT/3)
+
+						BallSpeedY = BDeflectionY * .35;
+
+					
+					
+				} 
 
 							
 				
 				
-				if(BallpX > 765) { //If the ball moves beyond the right edge of the screen
-					if(BallpY > AI_VPos && BallpY < AI_VPos + AI_HEIGHT) {
-						BallSpeedX *= -1; // Paddle collision 
-					} else {
-						ballReset();
-						LP_Score += 1; // +1 to left player
-					  } 
-					
-					if(BallpY > AI_Center) {
-						BallSpeedY -= 5; ////
-					}else{
-						BallSpeedY += 5; ////		
-					}
-					    
-				
-					
+				if(BallpX > 765 && BallpY >= AI_VPos && BallpY <= AI_VPos + AI_HEIGHT) { //If the ball moves beyond the right edge of the screen		
+						BallSpeedX *= -1; // Paddle collision 										
+						
+						var BDeflectionY = BallpY - (AI_VPos + AI_HEIGHT/2)
+
+						BallSpeedY = BDeflectionY * .35;
+		          
 				}
-            }	
+			}		
