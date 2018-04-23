@@ -1,6 +1,6 @@
             var BallpX = 400, BallpY = 300; ////
-			var BallSpeedX = 2;
-			var BallSpeedY = 2;
+			var BallSpeedX = -3;
+			var BallSpeedY = -3;
 			var BallPos;
 			var canvas; 
 			var canvasContext; 
@@ -14,6 +14,8 @@
 			var RP_Score = 0;
 			var AI_Center;
 			var P_Center = P_VPos + (P_HEIGHT/2);
+			const Win_Score = 1;
+			var Win_Screen = false; 
 
 			function MouseToPaddlePos(evt) {
 				var rect = canvas.getBoundingClientRect(), root = document.documentElement;
@@ -46,6 +48,8 @@
 				} ); //			
 
 				
+
+				
 			}//
 			
 
@@ -56,6 +60,14 @@
 				canvasContext.fillRect(0, 0, canvas.width, canvas.height); ////
 			}
 			
+			function winRect() {
+				//// clear the game view by filling it with black
+				canvasContext.fillStyle = 'grey'; ////
+				canvasContext.fillRect(0, 0, canvas.width, canvas.height); ////
+			}
+
+			
+			 
 			function paddle() {
 				////Draw Paddle
 				canvasContext.beginPath(); ////
@@ -88,20 +100,46 @@
 				canvasContext.font = "100px Arial"
 				canvasContext.fillText(LP_Score + "|" + RP_Score, canvas.width/3, 100)
 
-				if(LP_Score == 10) {
-					LP_Score -= 10;
-					RP_Score -= RP_Score;
-					ballReset();
+				if(BallpX <= 0){
+					RP_Score += 1;///
 				}
 
-				if(RP_Score == 10) {					
-					RP_Score -= 10;
-					LP_Score -= LP_Score;
-					ballReset();
+				if(BallpX >= canvas.width){
+					LP_Score += 1;///
 				}
+
+				
 			}
 			
 			function drawEverything() {
+
+				if(Win_Screen){
+					winRect();
+					
+					if(LP_Score >= Win_Score){
+						canvasContext.write
+						canvasContext.font = "100px Arial"
+						canvasContext.fillStyle = 'white'
+						canvasContext.textAlign = 'center'
+						canvasContext.fillText("Player 1 Wins!", canvas.width/2, canvas.height/2)
+					}
+					if(RP_Score >= Win_Score){
+						canvasContext.write
+						canvasContext.font = "100px Arial"
+						canvasContext.fillStyle = 'white'
+						canvasContext.textAlign = 'center'
+						canvasContext.fillText("Player 2 Wins!", canvas.width/2, canvas.height/2)
+					}	
+					
+					canvasContext.write
+					canvasContext.font = "25px Arial"
+					canvasContext.fillStyle = 'white'
+					canvasContext.textAlign = 'center'
+					canvasContext.fillText("Click to Restart", canvas.width/2, canvas.height*.75)
+
+					return;
+				}
+
 				////Background
 				colorRect();
 				////Paddle
@@ -113,9 +151,7 @@
 				
 				score(); ////
 				
-				if(RP_Score == 10 || LP_Score == 10){
-					clearTimeout(drawEverything)
-				}
+				
 
 			}
 						
@@ -123,20 +159,21 @@
 			function ballReset() {
 				BallpX = canvas.width/2; ////
 				BallpY = canvas.height/2; ////
-				BallSpeedX = -3; ////
-				BallSpeedY = -3; ////
-
 				
+				if(RP_Score >= Win_Score || LP_Score >= Win_Score){
+					Win_Screen = true;
+				}
+			
 			}
 			
 			function Ai_Movement() {
 				/////////AI for right paddle
 				AI_Center = AI_VPos + (AI_HEIGHT/2);	////
 				if(BallPos > (AI_Center+15)) {
-						AI_VPos += 4.5 + Math.random()*4; ////
+						AI_VPos += 3.5 + Math.random()*4; ////
 					}
 				if(BallPos < AI_Center-15) {
-						AI_VPos -= 4.5 + Math.random()*4; ////
+						AI_VPos -= 3.5 + Math.random()*4; ////
 					}								
 
 			}
@@ -146,13 +183,18 @@
 				// creates boundary along right edge
 				if(BallpX > canvas.width) {				
 					ballReset();
-						LP_Score += 1; // +1 to left player   
+					BallSpeedX = -3; 
+					BallSpeedY = -3;
+					score();
+				  
 				}
 				
 				// creates boundary along left edge
 				if(BallpX < 0) {										
 					ballReset(); //// 
-					RP_Score += 1; // +1 to right player 				
+					BallSpeedX = 3;	
+					BallSpeedY = -3;
+					score();	
 				}
 				
 				// creates boundary along top edge
@@ -169,6 +211,17 @@
 
 			function moveEverything() {
 				
+				if(Win_Screen){
+
+					canvas.addEventListener('click', function(evt) {					
+						Win_Screen = false;
+						ballReset();
+						LP_Score -= LP_Score;
+						RP_Score -= RP_Score;
+					} );
+					return;
+				}
+
 				Boundaries(); ////	
 
 				Ai_Movement(); ////
@@ -205,4 +258,5 @@
 						BallSpeedY = BDeflectionY * .35;
 		          
 				}
+				
 			}		
