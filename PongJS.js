@@ -18,6 +18,7 @@
 			var Win_Screen = false; 
 			const BallSpeed = BallSpeedX*BallSpeedY;
 			var Ballcolor = 'white';
+			
 
 			function MouseToPaddlePos(evt) {
 				var rect = canvas.getBoundingClientRect(), root = document.documentElement;
@@ -263,15 +264,15 @@
 				console.log("Ball location is now: " + BallpX +"," + BallpY); ////
 				console.log("Ball speed is " + BallSpeedX * BallSpeedY); ////
 				console.log("Paddle Vertical Position:" + P_VPos); ////		
+				console.log(BDeflectionP * .35);
 									
 				
 				if(BallpX < P_Width + 22 && BallpY >= P_VPos && BallpY <= P_VPos + P_HEIGHT) { //If the ball moves beyond the left edge of the screen				   
 						BallSpeedX *= -1; // Paddle collision 																		
 											
-						var BDeflectionY = BallpY - (P_VPos + P_HEIGHT/3)
+						var BDeflectionP = BallpY - (P_VPos + P_HEIGHT/3);
 
-						BallSpeedY = BDeflectionY * .35;
-
+						BallSpeedY = BDeflectionP * .35;
 					
 					
 				} 
@@ -282,10 +283,10 @@
 				if(BallpX > 765 && BallpY >= AI_VPos && BallpY <= AI_VPos + AI_HEIGHT) { //If the ball moves beyond the right edge of the screen		
 						BallSpeedX *= -1; // Paddle collision 										
 						
-						var BDeflectionY = BallpY - (AI_VPos + AI_HEIGHT/2)
+						var BDeflectionAI = BallpY - (AI_VPos + AI_HEIGHT/3);
 
-						BallSpeedY = BDeflectionY * .35;
+						BallSpeedY = BDeflectionAI * .35;
 		          
 				}
 				
-			}		
+			}			
