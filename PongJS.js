@@ -14,8 +14,10 @@
 			var RP_Score = 0;
 			var AI_Center;
 			var P_Center = P_VPos + (P_HEIGHT/2);
-			const Win_Score = 1;
+			const Win_Score = 10;
 			var Win_Screen = false; 
+			const BallSpeed = BallSpeedX*BallSpeedY;
+			var Ballcolor = 'white';
 
 			function MouseToPaddlePos(evt) {
 				var rect = canvas.getBoundingClientRect(), root = document.documentElement;
@@ -28,6 +30,7 @@
 					y: mouseY
 				};
 			}		
+			
 			
 			window.onload = function() {
 			// window.onload gets run automatically when the page finishes loading
@@ -48,9 +51,10 @@
 				} ); //			
 
 				
+			
 
 				
-			}//
+			} //
 			
 
 			
@@ -66,7 +70,15 @@
 				canvasContext.fillRect(0, 0, canvas.width, canvas.height); ////
 			}
 
-			
+			function Net() {
+				///draw net				
+				for(var NYPos = 0; NYPos < canvas.height; NYPos += 30) {
+					///canvasContext.beginPath(); /// 
+					canvasContext.fillStyle = 'white'; ////
+					canvasContext.fillRect(canvas.width/2 - 1, NYPos, 2,15 ); ///// 
+					///canvasContext.fill(); /// 
+				}
+			}
 			 
 			function paddle() {
 				////Draw Paddle
@@ -79,7 +91,7 @@
 			function colorCircle() {
 				//// Draw Ball ////
 				canvasContext.beginPath(); ////
-				canvasContext.fillStyle = 'white'; ////
+				canvasContext.fillStyle = Ballcolor; ////
 				canvasContext.arc(BallpX, BallpY, 10, 0, Math.PI*2, false); ////
 				canvasContext.fill(); 
 			}
@@ -95,10 +107,12 @@
 			
 			function score() {
 				
-				////Types score
+				////Displays score
 				canvasContext.write
 				canvasContext.font = "100px Arial"
-				canvasContext.fillText(LP_Score + "|" + RP_Score, canvas.width/3, 100)
+				canvasContext.fillStyle = 'white'
+				canvasContext.fillText(LP_Score, canvas.width*.25, 100)
+				canvasContext.fillText(RP_Score, canvas.width*.75, 100)
 
 				if(BallpX <= 0){
 					RP_Score += 1;///
@@ -142,20 +156,34 @@
 
 				////Background
 				colorRect();
+				////Net
+				Net(); /// 
 				////Paddle
 				paddle();
 				////Paddle for AI
 				comp(); ////
 				////Ball
 				colorCircle(); ////		
-				
+				////score
 				score(); ////
+				////Fireball 
+				Fireball(); ////
 				
 				
 
 			}
 						
-			
+			function Fireball() {
+				if(BallSpeed >= 30 || BallSpeed <= -30) {
+					Ballcolor == 'red'; ////
+				}
+
+				if(BallSpeed <= 30 || BallSpeed >= -30) {
+					Ballcolor == 'white'; ////
+				}
+				
+			}
+
 			function ballReset() {
 				BallpX = canvas.width/2; ////
 				BallpY = canvas.height/2; ////
@@ -225,6 +253,7 @@
 				Boundaries(); ////	
 
 				Ai_Movement(); ////
+
 				
 				//////// moves ball each sec ////	
 				BallpX += BallSpeedX;
@@ -232,7 +261,7 @@
 
 				BallPos = BallpY; ////
 				console.log("Ball location is now: " + BallpX +"," + BallpY); ////
-				console.log("Ball speed is " + BallSpeedX +","+ BallSpeedY); ////
+				console.log("Ball speed is " + BallSpeedX * BallSpeedY); ////
 				console.log("Paddle Vertical Position:" + P_VPos); ////		
 									
 				
